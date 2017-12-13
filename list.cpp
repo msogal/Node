@@ -2,26 +2,24 @@
 Student List allows a user to input and keep track of student information
 Mihira Sogal
 10/17/2017
+Modified on 12/5/2017 to implement a Linked List for Linked List Part 1
  */
 #include <iostream>
 #include <cstring>
-#include <vector>
 #include <iomanip>
+#include "Student.h"
+#include "Node.h"
 
 using namespace std;
 //this struct is used to store name ,gpa, and id for all students
-struct student{
-  char name[80];
-  int id;
-  float gpa;
-};
 
-void addStudent(char name[], int id, float gpa, vector<student*> *nvector);
+
+void addStudent(char name[], int id, float gpa);
+void print(Node* start);
+
+Node* head = NULL;
 
 int main(){
-  vector<student*> students;
-  vector<student*> *studentptr = &students;
-  
   bool inuse = true;
   while(inuse){
     //get input on what the user wants to do
@@ -29,7 +27,7 @@ int main(){
     cout<<"Type in what you want to do"<<endl;
     cin.get(action, 20);
     cin.ignore(80, '\n');
-    //if user wants to add a student, prompt and collect the information for that student, then add it to the vector
+    //if user wants to add a student, prompt and collect the information for that student, then add it to the linked list
     if(strcmp(action, "ADD")==0){
       char *name = new char[80];
       int id = 0;
@@ -43,20 +41,13 @@ int main(){
       cout<<"GPA of Student: " <<endl;
       cin>>gpa;
       cin.ignore(80, '\n');
-      // cout<<"Adding student... "<<"Name: "<<name<<"ID: "<<id<<"GPA: "<<gpa <<endl;
-      addStudent(name, id, gpa, studentptr);
-      // cout<<"Student added"<<endl;
+      cout<<"Adding student... "<<"Name: "<<name<<"ID: "<<id<<"GPA: "<<gpa <<endl;
+      addStudent(name, id, gpa);
     }
-    //if user wants to print, go through the array, and print the info for each student
+    //if user wants to print, go through the nodes, and print the info for each student
     if(strcmp(action,"PRINT")==0){
-      if(!studentptr->empty()){
-	for(vector<student*>::iterator it = studentptr->begin(); it != studentptr->end(); it++){
-	  cout<<(*it)->name<<","<<(*it)->id<<","<<setprecision(3) << (*it)->gpa<<endl;
-	}
-	//if there are no students in the array, notify the user
-      }else{
-	cout<<"No Students entered!"<<endl;
-      }
+      print(head);
+      
     }
     //exit the loop
     if(strcmp(action, "QUIT")==0){
@@ -64,41 +55,41 @@ int main(){
       inuse = false;
     }
     //delete a student based in the ID that the user gives you
-    if(strcmp(action, "DELETE")==0){
-	cout<<"Enter the ID of the student you wish to delete"<<endl;
-	int ID = 0;
-	cin>>ID;
-	cin.ignore(80, '\n');
-	for(vector<student*>::iterator it = studentptr->begin(); it != studentptr->end(); it++){
-	  if((*it)->id==ID){
-	    delete (*it);
-	    studentptr->erase(it);
-	    break;
-	  }
-	}
-	cout<<"Student # "<<ID<<" removed"<<endl;
-    }
   }
   cout<<"EXITED LOOP"<<endl;
   
   return 0;
 }
 
-void addStudent(char sname[80], int sid, float sgpa, vector<student*> *nvector ){
-  // cout<<"ENTERED ADDSTUDENT"<<endl;
-  // cout<<"Creating new student"<<endl;
-  student *newst = new student();
-  // cout<<"Student created"<<endl;
-  // cout<<"Copying name"<<endl;
-  strcpy((newst->name),sname);
-  // cout<<"Name copied"<<endl;
-  // cout<<"Copying ID"<<endl;
-  newst->id = sid;
-  // cout<<"id copied"<<endl;
-  // cout<<"Copying GPA"<<endl;
-  newst->gpa = sgpa;
-  // cout<<"gpa copied"<<endl;
-  // cout<<"pushing student"<<endl;
-  (*nvector).push_back(newst);
-  //  cout<<"Student pushed"<<endl;
+void addStudent(char sname[80], int sid, float sgpa){
+  // cout<<"Entered addStudent"<<endl;
+  Student* s = new Student(sname, sid, sgpa);
+  // cout<<"Student* created"<<endl;
+  Node* current = head;
+  if(current == NULL){
+    head =new Node();
+    head->setValue(s);
+  }else{
+    while(current->getNext()!= NULL){
+      cout<<"Serching for the end..."<<endl;
+      current = current->getNext();
+      cout<<"End found..."<<endl;
+    }
+    current->setNext(new Node());
+    cout<<"Adding"<<endl;
+    current->getNext()->setValue(s);
+    cout<<"Setting"<<endl;
+    cout<<"Added"<<endl;
+    
+  }
+}
+void print(Node* start){
+  if(start != NULL){
+    start->getValue()->printS();
+  }
+  cout<<"Checking for next..."<<endl;
+  if(start->getNext() != NULL){
+    cout<<"Continuing..."<<endl;
+    print(start->getNext());
+  }
 }
